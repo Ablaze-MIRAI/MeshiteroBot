@@ -1,0 +1,13 @@
+# Node
+node_modules
+
+# Yarn
+yarn-error.log
+
+# Nodemon
+nodemon.json
+
+# Git
+.gitignore
+LICENSE
+README.md

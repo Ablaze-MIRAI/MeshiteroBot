@@ -6,3 +6,6 @@ npm-error.log
 
 # Yarn
 yarn-error.log
+
+# TypeScript
+dist
