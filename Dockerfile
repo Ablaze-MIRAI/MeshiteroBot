@@ -6,4 +6,4 @@ RUN yarn install
 
 RUN yarn build
 
-ENTRYPOINT ["node", "./dist/src/main.js"]
+ENTRYPOINT ["tree"]
