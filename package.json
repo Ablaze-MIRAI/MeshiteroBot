@@ -2,7 +2,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "nodemon",
-    "build": "tsc"
+    "build": "cd src && tsc"
   },
   "dependencies": {
     "@types/node": "^18.7.13",
