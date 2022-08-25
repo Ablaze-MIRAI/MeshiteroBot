@@ -6,4 +6,4 @@ RUN yarn install
 
 RUN yarn build
 
-ENTRYPOINT ["node", "dist/main.js"]
+CMD ["node", "dist/main.js"]
