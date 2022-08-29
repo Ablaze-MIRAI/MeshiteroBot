@@ -3,6 +3,7 @@ version: "3"
 services:
   app:
     build: .
+    
     environment:
       # Discord API Token
       - DISCORD_TOKEN=<setToken>
