@@ -1,29 +1,39 @@
-import { EmbedBuilder } from "discord.js";
-import { embedError, FreaSearchImageUrl, FreaSearchImageUrlHtml, Log } from "./utils";
-import axios from "axios";
+import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from "fs";
+import { FreaSearchRequest, Log, embedError, Base64Encode, SendSuccessMessage } from "./utils";
 
 export default async (interaction: any): Promise<void> =>{
+    const nowTime = new Date().getTime();
     await interaction.deferReply().catch((e: Error) => Log({ type: "error", content: e.message }));
     const Query = interaction.options.getString("query");
-    const options = {
-        headers: {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:100.0) Gecko/20100101 Firefox/100.0"
+
+    // Cache
+    const encoded = Base64Encode(Query);
+    if(existsSync(`./cache/${encoded}.json`)){
+        const cached = JSON.parse(readFileSync(`./cache/${encoded}.json`, { encoding: "utf-8", flag: "r" }));
+        if(cached.limit > nowTime){
+            const processed_time = (new Date().getTime()) - nowTime;
+            SendSuccessMessage(cached, Query, processed_time, true, interaction);
+            Log({
+                type: "info",
+                content: "Use cache"
+            });
+            return;
         }
-    };
-    await axios.get(FreaSearchImageUrl(Query), options)
-    .then((response:any) =>{ 
-        return interaction.editReply({
-            embeds: [
-                new EmbedBuilder().setTitle(`「${Query}」を投下`).setDescription(`[すべての検索結果](${FreaSearchImageUrlHtml(Query)})`).setImage(response.data.results[Math.floor(Math.random() * response.data.results.length)].thumbnail_src),
-                new EmbedBuilder().setImage(response.data.results[Math.floor(Math.random() * response.data.results.length)].thumbnail_src).setFooter({ text: "Powered by FreaSearch", iconURL: "https://freasearch.org/favicon.ico" })
-            ]
+        unlinkSync(`./cache/${encoded}.json`);
+        Log({
+            type: "info",
+            content: "Removed cache"
         });
-    }).catch((e: Error) =>{
+    }
+
+    const resp = await FreaSearchRequest(Query);
+    if(resp.success !== undefined){
         Log({
             type: "error",
-            content: e.message
+            content: resp.ms
         });
-        if(e.message === "Request failed with status code 429"){
+
+        if(resp.type === 429){
             return interaction.editReply({
                 embeds: [
                     embedError({
@@ -31,15 +41,39 @@ export default async (interaction: any): Promise<void> =>{
                         content: "レート制限により取得に失敗"
                     })
                 ]
+            }).catch((e: any) =>{
+                Log({
+                    type: "error",
+                    content: e.message
+                });
             });
         }
-        interaction.editReply({
+
+        return interaction.editReply({
             embeds: [
                 embedError({
                     title: "エラー",
                     content: "データの取得に失敗"
                 })
             ]
-        })
+        }).catch((e: any) =>{
+            Log({
+                type: "error",
+                content: e.message
+            });
+        });
+    }
+
+    // Send
+    const processed_time = (new Date().getTime()) - nowTime;
+    SendSuccessMessage(resp.data, Query, processed_time, false, interaction);
+
+    // New Cache
+    if(!existsSync("./cache")) mkdirSync("./cache");
+    resp.data.limit = nowTime+(1000*60*60*24);
+    writeFileSync(`./cache/${Base64Encode(Query)}.json`, JSON.stringify(resp.data));
+    Log({
+        type: "info",
+        content: `"${Query}" cached`
     });
 }

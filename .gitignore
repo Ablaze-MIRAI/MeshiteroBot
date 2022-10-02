@@ -7,5 +7,6 @@ npm-error.log
 # Yarn
 yarn-error.log
 
-# TypeScript
+# Run
 dist
+cache
