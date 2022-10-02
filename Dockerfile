@@ -4,7 +4,7 @@ WORKDIR /usr/source
 
 COPY . .
 
-RUN yarn install
+RUN yarn install --production
 
 RUN yarn build
 
