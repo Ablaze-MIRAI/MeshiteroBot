@@ -11,3 +11,7 @@ nodemon.json
 .gitignore
 LICENSE
 README.md
+
+# Run
+cache
+dist
