@@ -25,7 +25,7 @@ const embedSuccess = ({title, content}: EmbedType): EmbedBuilder =>{
     return new EmbedBuilder().setColor("#c4ff89").setTitle(title).setDescription(content);
 };
 
-const FreaSearchImageUrl = (query: string) => `https://freasearch.org/search?q=${encodeURIComponent(query)}&category_images=on&format=json`;
+const FreaSearchImageUrl = (query: string) => `https://api.freasearch.org/search?q=${encodeURIComponent(query)}&category=images`;
 
 const FreaSearchImageUrlHtml = (query: string) => `https://freasearch.org/search?q=${encodeURIComponent(query)}&category_images=on`;
 
