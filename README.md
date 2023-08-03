@@ -1,5 +1,7 @@
 # MeshiteroBot
 
+#  ⚠ FreaSearchの開発終了に伴い、開発を終了しました。
+
 Discordに飯テロ画像を投下できるDiscordボットです。
 
 ## Use
